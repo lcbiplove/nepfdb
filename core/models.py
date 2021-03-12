@@ -3,6 +3,32 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from random import randint
+
+
+RANDOM_ID_DIGITS = 16
+
+
+class AutoId(models.Model):
+    """Auto add a custom integer ids"""
+
+    class Meta:
+        abstract = True
+
+    id = models.BigIntegerField(primary_key=True)
+
+    def save(self, *args, **kwargs):
+        """Check if the user id is provided or not, create random unique
+        if not provided"""
+
+        if not self.id:
+            is_unique = False
+            while not is_unique:
+                id = randint(10 ** (RANDOM_ID_DIGITS - 1),
+                             10 ** RANDOM_ID_DIGITS)
+                is_unique = not self.__class__.objects.filter(id=id).exists()
+            self.id = id
+        super(AutoId, self).save(*args, **kwargs)
 
 
 class UserManager(BaseUserManager):
@@ -29,7 +55,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, AutoId):
     """Custom user model that supports using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
