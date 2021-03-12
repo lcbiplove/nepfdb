@@ -24,3 +24,14 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Movie)
+admin.site.register(models.Review)
+admin.site.register(models.Person)
+admin.site.register(models.Award)
+admin.site.register(models.Genre)
+admin.site.register(models.Cast)
+admin.site.register(models.Production)
+admin.site.register(models.Profession)
+admin.site.register(models.Language)
+admin.site.register(models.Rating)
+admin.site.register(models.Photo)
