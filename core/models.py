@@ -15,7 +15,7 @@ class AutoId(models.Model):
     class Meta:
         abstract = True
 
-    id = models.BigIntegerField(primary_key=True)
+    id = models.BigIntegerField(primary_key=True, editable=False)
 
     def save(self, *args, **kwargs):
         """Check if the user id is provided or not, create random unique
@@ -82,7 +82,7 @@ class Review(AutoId):
     movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.text)
+        return f"{self.movie.name} : {self.vote}"
 
 
 class Language(models.Model):
@@ -97,6 +97,7 @@ class Language(models.Model):
 class Genre(models.Model):
     """Genre/Category of the movie"""
     name = models.CharField(max_length=30, unique=True)
+    desc = models.TextField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return str(self.name)
@@ -105,6 +106,7 @@ class Genre(models.Model):
 class Rating(models.Model):
     """Rating type of movie, eg: PG, PG-13"""
     name = models.CharField(max_length=10, unique=True)
+    desc = models.TextField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return str(self.name)
@@ -113,11 +115,13 @@ class Rating(models.Model):
 class Movie(AutoId):
     """Model to contain movie details"""
     name = models.CharField(max_length=50)
-    budget = models.DecimalField(decimal_places=2, max_digits=20, null=True)
+    budget = models.DecimalField(
+        decimal_places=2, max_digits=20, null=True, blank=True)
     summary = models.TextField()
     release_date = models.DateField()
-    runtime = models.IntegerField(blank=True)
-    boxoffice = models.DecimalField(decimal_places=2, max_digits=20)
+    runtime = models.IntegerField(null=True, blank=True)
+    boxoffice = models.DecimalField(
+        decimal_places=2, max_digits=20, null=True, blank=True)
     added_at = models.DateTimeField(auto_now_add=True)
     language = models.ManyToManyField('Language')
     genre = models.ManyToManyField('Genre')
@@ -132,8 +136,10 @@ class Movie(AutoId):
 class Award(AutoId):
     """Award recieved by cast members or movies"""
     name = models.CharField(max_length=50)
-    movie = models.ForeignKey('Movie', on_delete=models.PROTECT)
-    cast = models.ForeignKey('Cast', on_delete=models.PROTECT)
+    movie = models.ForeignKey(
+        'Movie', on_delete=models.PROTECT, blank=True, null=True)
+    cast = models.ForeignKey(
+        'Cast', on_delete=models.PROTECT, blank=True, null=True)
 
     def __str__(self):
         return str(self.name)
@@ -181,8 +187,10 @@ class Profession(models.Model):
 class Photo(AutoId):
     """Photo/posters of artist or movie"""
     link = models.CharField(max_length=255)
-    movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    movie = models.ForeignKey(
+        'Movie', on_delete=models.CASCADE, null=True, blank=True)
+    person = models.ForeignKey(
+        'Person', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return str(self.link)
