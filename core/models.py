@@ -68,3 +68,121 @@ class User(AbstractBaseUser, PermissionsMixin, AutoId):
     USERNAME_FIELD = 'email'
 
     REQUIRED_FIELDS = ['name', ]
+
+    def __str__(self):
+        return str(self.email)
+
+
+class Review(AutoId):
+    """Review model to store review of the movie"""
+    text = models.TextField(blank=True)
+    vote = models.DecimalField(decimal_places=1, max_digits=2)
+    reviewed_at = models.DateTimeField(auto_now_add=True)
+    reviewer = models.OneToOneField('User', on_delete=models.CASCADE)
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.text)
+
+
+class Language(models.Model):
+    """Language of the movie"""
+    name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=10, unique=True)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Genre(models.Model):
+    """Genre/Category of the movie"""
+    name = models.CharField(max_length=30, unique=True)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Rating(models.Model):
+    """Rating type of movie, eg: PG, PG-13"""
+    name = models.CharField(max_length=10, unique=True)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Movie(AutoId):
+    """Model to contain movie details"""
+    name = models.CharField(max_length=50)
+    budget = models.DecimalField(decimal_places=2, max_digits=20, null=True)
+    summary = models.TextField()
+    release_date = models.DateField()
+    runtime = models.IntegerField(blank=True)
+    boxoffice = models.DecimalField(decimal_places=2, max_digits=20)
+    added_at = models.DateTimeField(auto_now_add=True)
+    language = models.ManyToManyField('Language')
+    genre = models.ManyToManyField('Genre')
+    production = models.ManyToManyField(
+        'Production')
+    rating = models.ManyToManyField('Rating')
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Award(AutoId):
+    """Award recieved by cast members or movies"""
+    name = models.CharField(max_length=50)
+    movie = models.ForeignKey('Movie', on_delete=models.PROTECT)
+    cast = models.ForeignKey('Cast', on_delete=models.PROTECT)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Cast(models.Model):
+    """Cast members of movie"""
+    character = models.CharField(max_length=50, default="Cast")
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    profession = models.ForeignKey('Profession', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.character)
+
+
+class Production(AutoId):
+    """Production house object"""
+    name = models.CharField(max_length=50)
+    established_year = models.IntegerField()
+    person = models.ManyToManyField('Person')
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Person(AutoId):
+    """Artist associated with movie industry"""
+    name = models.CharField(max_length=50)
+    dob = models.DateField()
+    nation = models.CharField(max_length=28)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Profession(models.Model):
+    """Profession of the artist, eg: director"""
+    type = models.CharField(max_length=28)
+
+    def __str__(self):
+        return str(self.type)
+
+
+class Photo(AutoId):
+    """Photo/posters of artist or movie"""
+    link = models.CharField(max_length=255)
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.link)
