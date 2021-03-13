@@ -55,7 +55,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin, AutoId):
+class User(AbstractBaseUser, PermissionsMixin, models.Model, ):
     """Custom user model that supports using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
@@ -73,12 +73,12 @@ class User(AbstractBaseUser, PermissionsMixin, AutoId):
         return str(self.email)
 
 
-class Review(AutoId):
+class Review(models.Model, ):
     """Review model to store review of the movie"""
     text = models.TextField(blank=True)
-    vote = models.DecimalField(decimal_places=1, max_digits=2)
+    vote = models.DecimalField(decimal_places=1, max_digits=3)
     reviewed_at = models.DateTimeField(auto_now_add=True)
-    reviewer = models.OneToOneField('User', on_delete=models.CASCADE)
+    reviewer = models.ForeignKey('User', on_delete=models.CASCADE)
     movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -112,7 +112,7 @@ class Rating(models.Model):
         return str(self.name)
 
 
-class Movie(AutoId):
+class Movie(models.Model, ):
     """Model to contain movie details"""
     name = models.CharField(max_length=50)
     budget = models.DecimalField(
@@ -133,16 +133,29 @@ class Movie(AutoId):
         return str(self.name)
 
 
-class Award(AutoId):
-    """Award recieved by cast members or movies"""
+class Award(models.Model, ):
+    """Award object"""
     name = models.CharField(max_length=50)
+    first_year = models.IntegerField()
+
+    def __str__(self):
+        return str(self.name)
+
+
+class AwardCategory(models.Model, ):
+    """Award category for each award"""
+    category = models.CharField(max_length=50)
     movie = models.ForeignKey(
         'Movie', on_delete=models.PROTECT, blank=True, null=True)
     cast = models.ForeignKey(
         'Cast', on_delete=models.PROTECT, blank=True, null=True)
+    award = models.ForeignKey('Award', on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name_plural = "Award Categories"
 
     def __str__(self):
-        return str(self.name)
+        return str(self.category)
 
 
 class Cast(models.Model):
@@ -156,7 +169,7 @@ class Cast(models.Model):
         return str(self.character)
 
 
-class Production(AutoId):
+class Production(models.Model, ):
     """Production house object"""
     name = models.CharField(max_length=50)
     established_year = models.IntegerField()
@@ -166,7 +179,7 @@ class Production(AutoId):
         return str(self.name)
 
 
-class Person(AutoId):
+class Person(models.Model, ):
     """Artist associated with movie industry"""
     name = models.CharField(max_length=50)
     dob = models.DateField()
@@ -184,7 +197,7 @@ class Profession(models.Model):
         return str(self.type)
 
 
-class Photo(AutoId):
+class Photo(models.Model, ):
     """Photo/posters of artist or movie"""
     link = models.CharField(max_length=255)
     movie = models.ForeignKey(
