@@ -7,5 +7,6 @@ router = DefaultRouter()
 router.register('', views.UserViewSet)
 
 urlpatterns = [
+    path('', include('rest_framework.urls'), name="login"),
     path('', include(router.urls)),
 ]
