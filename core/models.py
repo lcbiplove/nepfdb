@@ -89,6 +89,7 @@ class Language(models.Model):
     """Language of the movie"""
     name = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=10, unique=True)
+    country = models.CharField(max_length=30)
 
     def __str__(self):
         return str(self.name)
