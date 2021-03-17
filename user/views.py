@@ -2,8 +2,11 @@ from rest_framework import generics, viewsets, views
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from django.contrib.auth import logout
+
 from .serializers import UserSerializer, UserForAdminSerializer
 from .permissions import IsOwnerOrAdmin
+from rest_framework import status
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -20,3 +23,12 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             self.permission_classes = [IsOwnerOrAdmin]
         return super().get_permissions()
+
+
+class UserLogoutView(views.APIView):
+    def get(self, request, format=None):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def post(self, request, format=None):
+        logout(request)
+        return Response(status=status.HTTP_200_OK)
