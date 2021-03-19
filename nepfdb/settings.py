@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
     'movie.apps.MovieConfig',
-    'person.apps.PersonConfig',
+    'name.apps.NameConfig',
 
     'rest_framework',
 

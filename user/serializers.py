@@ -39,3 +39,9 @@ class UserSerializer(UserForAdminSerializer):
     """Serializer without admin acces, i.e normal user serializer"""
     class Meta(UserForAdminSerializer.Meta):
         fields = ['id', 'email', 'name', 'password']
+
+
+class UserIdAndNameSerializer(UserForAdminSerializer):
+    """Serializer with user id and name only"""
+    class Meta(UserForAdminSerializer.Meta):
+        fields = ['id', 'name']

@@ -40,3 +40,13 @@ class MovieViewSet(viewsets.ModelViewSet):
     queryset = models.Movie.objects.all()
     serializer_class = serializers.MovieSerializer
     # permission_classes = [IsAdminUser, ]
+
+
+class ProductionViewSet(viewsets.ModelViewSet):
+    queryset = models.Production.objects.all()
+    serializer_class = serializers.ProductionSerializer
+
+
+class CastViewSet(viewsets.ModelViewSet):
+    queryset = models.Cast.objects.all()
+    serializer_class = serializers.CastSerializer
