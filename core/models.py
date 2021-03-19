@@ -124,11 +124,11 @@ class Movie(models.Model, ):
     boxoffice = models.DecimalField(
         decimal_places=2, max_digits=20, null=True, blank=True)
     added_at = models.DateTimeField(auto_now_add=True)
-    language = models.ManyToManyField('Language')
+    language = models.ForeignKey('Language', on_delete=models.CASCADE)
     genre = models.ManyToManyField('Genre')
     production = models.ManyToManyField(
         'Production')
-    rating = models.ManyToManyField('Rating')
+    rating = models.ForeignKey('Rating', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.name)

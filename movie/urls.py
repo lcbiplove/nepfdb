@@ -6,6 +6,7 @@ router = DefaultRouter()
 router.register('lang', viewset=views.LanguageViewSet)
 router.register('genre', viewset=views.GenreViewSet)
 router.register('rating', viewset=views.RatingViewSet)
+router.register('review', viewset=views.ReviewViewSet)
 router.register('', viewset=views.MovieViewSet)
 
 urlpatterns = [
