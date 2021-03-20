@@ -10,7 +10,7 @@ class UserForAdminSerializer(serializers.ModelSerializer):
     """Base Serializer for admin with all possible permissions"""
     class Meta:
         model = get_user_model()
-        fields = ['id', 'email', 'name', 'password',  'is_staff']
+        fields = ['id', 'email', 'name', 'password',  'is_staff', 'pp']
         extra_kwargs = {
             "password": {"write_only": True, "style": {"input_type": "password", }},
         }
