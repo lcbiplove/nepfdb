@@ -25,12 +25,19 @@ class RatingSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    reviewers = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = models.Review
         fields = '__all__'
         extra_kwargs = {
             "reviewer": {"read_only": True, },
         }
+
+    def get_reviewers(self, obj):
+        obj = userSerializer.UserIdAndNameSerializer(
+            obj.reviewer, many=False).data
+        return obj
 
     def validate_vote(self, value):
         if value < 1 or value > 10:
@@ -55,58 +62,87 @@ class ReviewSerializer(serializers.ModelSerializer):
         attrs['reviewer'] = reviewer
         return attrs
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['reviewer'] = userSerializer.UserIdAndNameSerializer(
-            instance.reviewer, many=False).data
-        return representation
 
-
-class MovieSerializer(serializers.ModelSerializer):
+class MovieBasicSerializer(serializers.ModelSerializer):
     average_vote = serializers.SerializerMethodField(read_only=True)
-    reviews = serializers.SerializerMethodField(read_only=True)
-    casts = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.Movie
         fields = '__all__'
-
-    def to_representation(self, instance):
-        representation = super(
-            MovieSerializer, self).to_representation(instance)
-        representation['language'] = instance.language.name
-        representation['rating'] = instance.rating.name
-        representation['genre'] = GenreSerializer(
-            instance.genre.all(), many=True).data
-        representation['production'] = ProductionSerializer(
-            instance.production.all(), many=True).data
-        return representation
+        abstract = True
 
     def get_average_vote(self, obj):
         avg_vote = obj.review_set.all().aggregate(Avg('vote'))
         return round(avg_vote.get('vote__avg'), 1)
 
-    def get_reviews(self, obj):
-        reviews = obj.review_set.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return serializer.data
+
+class MovieSerializer(MovieBasicSerializer):
+    awards = serializers.SerializerMethodField(read_only=True)
+    casts = serializers.SerializerMethodField(read_only=True)
+    reviews = serializers.SerializerMethodField(read_only=True)
+    language_name = serializers.SerializerMethodField(read_only=True)
+    rating_type = serializers.SerializerMethodField(read_only=True)
+    genres = serializers.SerializerMethodField(read_only=True)
+    productions = serializers.SerializerMethodField(read_only=True)
 
     def get_casts(self, obj):
         casts = obj.cast_set.all()
         serializer = CastMovieDetailSerializer(casts, many=True)
         return serializer.data
 
+    def get_reviews(self, obj):
+        reviews = obj.review_set.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return serializer.data
+
+    def get_awards(self, obj):
+        data = None
+        cast = models.AwardCategory.objects.filter(
+            cast__in=obj.cast_set.all()).all() or None
+        movie = obj.awardcategory_set.all() or None
+
+        if cast or movie:
+            total = 0
+            wins = 0
+            if movie:
+                total += movie.count()
+                wins += movie.filter(isWinner=True).count()
+            if cast:
+                total += cast.count()
+                wins += cast.filter(isWinner=True).count()
+
+            data = {
+                "wins": wins,
+                "nominations": total,
+            }
+        return data
+
+    def get_language_name(self, obj):
+        return obj.language.name
+
+    def get_rating_type(self, obj):
+        return obj.rating.name
+
+    def get_genres(self, obj):
+        return GenreSerializer(
+            obj.genre.all(), many=True).data
+
+    def get_productions(self, obj):
+        return ProductionSerializer(
+            obj.production.all(), many=True).data
+
 
 class ProductionSerializer(serializers.ModelSerializer):
+    persons = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = models.Production
         fields = '__all__'
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['person'] = nameSerializer.PersonSerializer(
-            instance.person.all(), many=True).data
-        return representation
+    def get_persons(self, obj):
+        obj = nameSerializer.PersonSerializer(
+            obj.person.all(), many=True).data
+        return obj
 
 
 class CastSerializer(serializers.ModelSerializer):

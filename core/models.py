@@ -133,6 +133,10 @@ class Movie(models.Model, ):
     def __str__(self):
         return str(self.name)
 
+    @property
+    def year(self):
+        return self.release_date.year
+
 
 class Award(models.Model, ):
     """Award object"""
@@ -151,6 +155,7 @@ class AwardCategory(models.Model, ):
     cast = models.ForeignKey(
         'Cast', on_delete=models.PROTECT, blank=True, null=True)
     award = models.ForeignKey('Award', on_delete=models.PROTECT)
+    isWinner = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Award Categories"
@@ -185,6 +190,7 @@ class Person(models.Model, ):
     name = models.CharField(max_length=50)
     dob = models.DateField()
     nation = models.CharField(max_length=28)
+    bio = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return str(self.name)
