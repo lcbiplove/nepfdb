@@ -77,9 +77,10 @@ class MovieBasicSerializer(serializers.ModelSerializer):
 
 
 class MovieSerializer(MovieBasicSerializer):
-    awards = serializers.SerializerMethodField(read_only=True)
     casts = serializers.SerializerMethodField(read_only=True)
     reviews = serializers.SerializerMethodField(read_only=True)
+    awards = serializers.SerializerMethodField(read_only=True)
+    photos = serializers.SerializerMethodField(read_only=True)
     language_name = serializers.SerializerMethodField(read_only=True)
     rating_type = serializers.SerializerMethodField(read_only=True)
     genres = serializers.SerializerMethodField(read_only=True)
@@ -117,6 +118,10 @@ class MovieSerializer(MovieBasicSerializer):
             }
         return data
 
+    def get_photos(self, obj):
+        queryset = obj.photo_set.all()
+        return [x.link for x in queryset]
+
     def get_language_name(self, obj):
         return obj.language.name
 
@@ -140,7 +145,7 @@ class ProductionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_persons(self, obj):
-        obj = nameSerializer.PersonSerializer(
+        obj = nameSerializer.PersonNameSerializer(
             obj.person.all(), many=True).data
         return obj
 

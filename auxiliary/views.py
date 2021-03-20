@@ -11,3 +11,8 @@ class AwardViewSet(viewsets.ModelViewSet):
 class AwardCategoryViewSet(viewsets.ModelViewSet):
     queryset = models.AwardCategory.objects.all()
     serializer_class = serializers.AwardCategorySerializer
+
+
+class PhotoViewSet(viewsets.ModelViewSet):
+    queryset = models.Photo.objects.all()
+    serializer_class = serializers.PhotoSerializer

@@ -5,6 +5,7 @@ from . import views
 router = DefaultRouter()
 router.register('awards', viewset=views.AwardViewSet)
 router.register('award-category', viewset=views.AwardCategoryViewSet)
+router.register('images', viewset=views.PhotoViewSet)
 
 urlpatterns = [
     path('', include(router.urls))

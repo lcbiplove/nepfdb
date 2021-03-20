@@ -4,6 +4,7 @@ from core import models
 
 class PersonSerializer(serializers.ModelSerializer):
     awards = serializers.SerializerMethodField(read_only=True)
+    photos = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.Person
@@ -19,6 +20,10 @@ class PersonSerializer(serializers.ModelSerializer):
                 "nominations": award.count(),
             }
         return award
+
+    def get_photos(self, obj):
+        queryset = obj.photo_set.all()
+        return [x.link for x in queryset]
 
 
 class PersonNameSerializer(serializers.ModelSerializer):

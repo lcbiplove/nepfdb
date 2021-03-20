@@ -34,3 +34,27 @@ class AwardCategorySerializer(serializers.ModelSerializer):
                 _("Please select only either cast or movie."))
 
         return attrs
+
+
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Photo
+        fields = "__all__"
+
+    def validate(self, attrs):
+        if (not attrs.get('movie') and not attrs.get('person')):
+            raise serializers.ValidationError(
+                _("Please select movie or person."))
+        return attrs
+
+
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Photo
+        fields = "__all__"
+
+
+class PhotoLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Photo
+        fields = ['link']
