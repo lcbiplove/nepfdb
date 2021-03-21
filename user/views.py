@@ -20,9 +20,16 @@ class UserViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def get_permissions(self):
-        if self.action == "retrieve":
+        if self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
             self.permission_classes = [IsOwnerOrAdmin]
         return super().get_permissions()
+
+    def update(self, request, *args, **kwargs):
+        """On update set password as hash"""
+        user = self.get_object()
+        password = request.data.get('password')
+        user.set_password(password)
+        return super().update(request, *args, **kwargs)
 
 
 class UserLogoutView(views.APIView):

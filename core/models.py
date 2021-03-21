@@ -59,7 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin, models.Model, ):
     """Custom user model that supports using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
-    pp = models.ImageField(upload_to='photos/pp')
+    pp = models.ImageField(upload_to='photos/pp', blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -71,6 +71,9 @@ class User(AbstractBaseUser, PermissionsMixin, models.Model, ):
 
     def __str__(self):
         return str(self.email)
+
+    def get_image(self):
+        return self.pp.path
 
 
 class Review(models.Model, ):

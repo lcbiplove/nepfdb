@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.utils.translation import gettext as _
 
-from nepfdb.utils import checkNumberAndAlpha, checkAlphaAndSpace
+from nepfdb.utils import image_crop, checkNumberAndAlpha, checkAlphaAndSpace
 
 
 class UserForAdminSerializer(serializers.ModelSerializer):
@@ -14,6 +14,7 @@ class UserForAdminSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "password": {"write_only": True, "style": {"input_type": "password", }},
         }
+        abstract = True
 
     def validate_name(self, value):
         if len(value.strip()) < 3 or not checkAlphaAndSpace(value):
@@ -34,11 +35,16 @@ class UserForAdminSerializer(serializers.ModelSerializer):
         login(self.context.get('request'), user)
         return user
 
+    def save(self, **kwargs):
+        """Compress and resize image"""
+        obj = super().save(**kwargs)
+        return image_crop(obj)
+
 
 class UserSerializer(UserForAdminSerializer):
     """Serializer without admin acces, i.e normal user serializer"""
     class Meta(UserForAdminSerializer.Meta):
-        fields = ['id', 'email', 'name', 'password']
+        fields = ['id', 'email', 'name', 'password', 'pp']
 
 
 class UserIdAndNameSerializer(UserForAdminSerializer):
