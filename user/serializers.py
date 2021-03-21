@@ -48,6 +48,11 @@ class UserSerializer(UserForAdminSerializer):
 
 
 class UserIdAndNameSerializer(UserForAdminSerializer):
-    """Serializer with user id and name only"""
+    """Serializer with user id and name and photo only"""
+    photo = serializers.SerializerMethodField(read_only=True)
+
     class Meta(UserForAdminSerializer.Meta):
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'photo']
+
+    def get_photo(self, obj):
+        return obj.pp.url

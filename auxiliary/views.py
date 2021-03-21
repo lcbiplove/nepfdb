@@ -13,6 +13,14 @@ class AwardCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AwardCategorySerializer
 
 
+class AwardAwardCategoryViewset(viewsets.ModelViewSet):
+    queryset = models.AwardCategory.objects.all()
+    serializer_class = serializers.AwardCategorySerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(award=self.kwargs.get('award_pk'))
+
+
 class PhotoViewSet(viewsets.ModelViewSet):
     queryset = models.Photo.objects.all()
     serializer_class = serializers.PhotoSerializer

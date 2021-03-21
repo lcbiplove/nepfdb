@@ -27,9 +27,18 @@ class PersonSerializer(serializers.ModelSerializer):
 
 
 class PersonNameSerializer(serializers.ModelSerializer):
+    photo = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = models.Person
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'photo']
+
+    def get_photo(self, obj):
+        try:
+            obj = obj.photo_set.first().link
+        except:
+            obj = None
+        return obj
 
 
 class ProfessionSerializer(serializers.ModelSerializer):

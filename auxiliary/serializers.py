@@ -12,11 +12,12 @@ class AwardSerializer(serializers.ModelSerializer):
 
 class AwardCategorySerializer(serializers.ModelSerializer):
     year = serializers.SerializerMethodField(read_only=True)
-    awards = serializers.SerializerMethodField(read_only=True)
+    award_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.AwardCategory
         fields = "__all__"
+        abstract = True
 
     def get_year(self, obj):
         if obj.movie:
@@ -25,8 +26,8 @@ class AwardCategorySerializer(serializers.ModelSerializer):
             year = obj.cast.movie.year
         return year
 
-    def get_awards(self, obj):
-        return AwardSerializer(obj.award, many=False).data
+    def get_award_name(self, obj):
+        return obj.award.name
 
     def validate(self, attrs):
         if (attrs.get('cast') and attrs.get('movie')) or not (attrs.get('cast') or attrs.get('movie')):

@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/users/', include('user.urls')),
-    path('api/v1/movies/', include('movie.urls')),
+    path('api/v1/titles/', include('movie.urls')),
     path('api/v1/names/', include('name.urls')),
     path('api/v1/aux/', include('auxiliary.urls')),
 ]

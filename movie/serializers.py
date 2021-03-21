@@ -65,6 +65,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class MovieBasicSerializer(serializers.ModelSerializer):
     average_vote = serializers.SerializerMethodField(read_only=True)
+    photo = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.Movie
@@ -74,6 +75,13 @@ class MovieBasicSerializer(serializers.ModelSerializer):
     def get_average_vote(self, obj):
         avg_vote = obj.review_set.all().aggregate(Avg('vote'))
         return round(avg_vote.get('vote__avg'), 1)
+
+    def get_photo(self, obj):
+        try:
+            obj = obj.photo_set.first().link
+        except:
+            obj = None
+        return obj
 
 
 class MovieSerializer(MovieBasicSerializer):
