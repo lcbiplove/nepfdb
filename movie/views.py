@@ -7,6 +7,8 @@ from core import models
 from .permissions import IsOwner
 from rest_framework.decorators import action
 from django.db.models import Q
+from nepfdb import paginations
+from rest_framework import filters
 
 
 class LanguageViewSet(viewsets.ModelViewSet):
@@ -66,11 +68,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = models.Movie.objects.all()
     serializer_class = serializers.MovieSerializer
-    # permission_classes = [IsAdminUser, ]
+    pagination_class = paginations.MediumResultsSetPagination
+    filterset_fields = ['name', 'runtime']
+    filter_backends = [filters.SearchFilter, ]
+    search_fields = ['name', 'runtime']
 
 
 class MovieCastViewset(viewsets.ModelViewSet):
     serializer_class = serializers.CastMovieDetailSerializer
+    pagination_class = paginations.LargeResultsSetPagination
 
     def get_queryset(self, **kwargs):
         return models.Cast.objects.filter(movie=self.kwargs.get('movie_pk')).all()
@@ -78,6 +84,7 @@ class MovieCastViewset(viewsets.ModelViewSet):
 
 class MovieReviewViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ReviewSerializer
+    pagination_class = paginations.LargeResultsSetPagination
 
     def get_queryset(self, **kwargs):
         return models.Review.objects.filter(movie=self.kwargs.get('movie_pk')).all()
@@ -85,6 +92,7 @@ class MovieReviewViewset(viewsets.ModelViewSet):
 
 class MovieAwardCategoryViewset(viewsets.ModelViewSet):
     serializer_class = auxSerializers.AwardCategorySerializer
+    pagination_class = paginations.LargeResultsSetPagination
 
     def get_queryset(self, **kwargs):
         return models.AwardCategory.objects.filter(
@@ -95,6 +103,7 @@ class MovieAwardCategoryViewset(viewsets.ModelViewSet):
 
 class MovieProductionViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ProductionSerializer
+    pagination_class = paginations.LargeResultsSetPagination
 
     def get_queryset(self, **kwargs):
         return models.Production.objects.filter(movie=self.kwargs.get('movie_pk')).all()
@@ -103,8 +112,10 @@ class MovieProductionViewset(viewsets.ModelViewSet):
 class ProductionViewSet(viewsets.ModelViewSet):
     queryset = models.Production.objects.all()
     serializer_class = serializers.ProductionSerializer
+    pagination_class = paginations.MediumResultsSetPagination
 
 
 class CastViewSet(viewsets.ModelViewSet):
     queryset = models.Cast.objects.all()
     serializer_class = serializers.CastSerializer
+    pagination_class = paginations.MediumResultsSetPagination
