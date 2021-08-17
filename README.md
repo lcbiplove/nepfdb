@@ -1,6 +1,13 @@
 # Nepali Film Database
 
-This is the simple movie database api build on django rest framework. Models and their relationships look something like:
+You can view [demo](https://nepfdb.herokuapp.com) from here. For the sample, credentials are:
+```
+email: tester@gmail.com
+pw: Biplove123
+```
+
+### Relationship diagram
+
 
 ![Er relationships](movies.png)
 
